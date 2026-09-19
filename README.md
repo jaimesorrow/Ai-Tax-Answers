@@ -37,6 +37,14 @@ npm test
 
 The current in-memory usage counter is suitable only for development: it resets when the server restarts and a user can reset it by clearing browser data. Before public launch, replace it with authenticated, persistent server-side entitlements. Never trust a plan name sent by a mobile client.
 
+## Android + Firebase
+
+The repository now includes a Jetpack Compose Android app registered to the Firebase package in `app/google-services.json`. Open the repository root in Android Studio, allow Gradle to sync, enable Anonymous Authentication in Firebase Console, and run against the local backend. The Android emulator uses `http://10.0.2.2:3000` in debug builds; set `TAX_API_BASE_URL` to an HTTPS production endpoint for release builds.
+
+Firebase Analytics, Anonymous Authentication, Firestore, and Play Integrity App Check dependencies are installed through Firebase BoM `34.19.0`. The client sends both its Firebase ID token and App Check token to the backend. **The current Node backend does not yet verify those tokens**, so this is not an authentication boundary until Firebase Admin token verification and persistent Firestore entitlements are added. Enable App Check enforcement only after that server work and after registering the Play signing certificate.
+
+The Firebase configuration file identifies the app but is not a server credential. Never put the OpenAI key, a Firebase Admin service-account key, or Play Developer API credentials in the Android module or GitHub.
+
 ## Before a public launch
 
 This is a runnable development MVP, not a released Android app. Live provider integration needs a configured key and end-to-end validation. Validate interview accuracy with reviewed cases for dependencies, self-employment, filing status and credits, including historical years and contradictory facts. Add authentication, per-user rate/budget limits and secure HTTPS hosting before exposing the paid endpoint publicly; the current global concurrency cap is not a per-user abuse control. Keep the default loopback binding during development.
