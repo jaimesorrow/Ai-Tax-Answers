@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "209144788113",
+    "project_id": "aitaxanswers",
+    "storage_bucket": "aitaxanswers.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:209144788113:android:e61482d0f5e344bc0f7b30",
+        "android_client_info": {
+          "package_name": "Com.aitaxanswers.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANQ-nW9JUsesxPHLHq0lE6jSFaQLC5-SQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -20,6 +20,11 @@ export function validateInput(body) {
   if (total > 40000 || body.messages.at(-1).role !== 'user') throw new Error('Conversation is too long or invalid.');
   return body.messages.map(({role,content}) => ({role,content}));
 }
+export function buildInput(messages,topic='other') {
+  const allowed=new Set(['dependents','self-employment','deductions','payments','other']);
+  const selected=allowed.has(topic)?topic:'other';
+  return [{role:'developer',content:`The user selected the interview category: ${selected}. Stay within US federal tax information and ask only facts material to their question.`},...messages];
+}
 export function normalizeResponse(data) {
   if (data.status !== 'completed') throw new Error('The AI could not complete its response. Please try again.');
   const parts = (data.output || []).filter(x => x.type === 'message').flatMap(x => x.content || []).filter(x => x.type === 'output_text');
@@ -30,11 +35,11 @@ export function normalizeResponse(data) {
   const sources = [...new Map(citations.map(a => [a.url,{title:a.title || 'IRS source',url:a.url}])).values()];
   return {text:parts.map(p => p.text).join('\n'),sources,verified:true};
 }
-export async function answer(messages, {apiKey,model='gpt-5.4',fetcher=fetch}={}) {
+export async function answer(messages, {apiKey,model='gpt-5.4',fetcher=fetch,topic='other'}={}) {
   if (!apiKey) throw new Error('Live AI is not connected yet. Set OPENAI_API_KEY on the server.');
   const response = await fetcher('https://api.openai.com/v1/responses', {
     method:'POST',headers:{'Authorization':`Bearer ${apiKey}`,'Content-Type':'application/json'},signal:AbortSignal.timeout(90000),
-    body:JSON.stringify({model,store:false,instructions,input:messages,tools:[{type:'web_search',filters:{allowed_domains:['irs.gov']}}],tool_choice:'required',max_output_tokens:3500})
+    body:JSON.stringify({model,store:false,instructions,input:buildInput(messages,topic),tools:[{type:'web_search',filters:{allowed_domains:['irs.gov']}}],tool_choice:'required',max_output_tokens:3500})
   });
   if (!response.ok) throw new Error('The AI service is unavailable. Please try again later.');
   return normalizeResponse(await response.json());

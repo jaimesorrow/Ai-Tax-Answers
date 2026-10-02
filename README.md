@@ -27,11 +27,29 @@ npm test
 - No database, browser persistence or request-body logging. Conversations stay in browser memory and are sent with each request. Provider storage is disabled with store:false; this does not guarantee zero provider retention. New chat clears browser conversation memory.
 - Input limits, same-origin checks, concurrency cap, security headers and CI tests.
 
+## Product MVP
+
+- Five guided federal-tax categories with the chosen category supplied to the interview engine.
+- Three new interviews per anonymous browser session each month. Follow-up messages in the same interview do not consume another allowance.
+- Up to 20 conversations saved locally on the user's device; no tax conversation database is used in this phase.
+- Product cards for Free, Plus, and the Tax Season Pass. Paid buttons are intentionally disabled until Google Play Billing verification exists on the server.
+- Anonymous session and usage endpoints that can later be replaced by Firebase Authentication, Firestore entitlements, and Firebase App Check.
+
+The current in-memory usage counter is suitable only for development: it resets when the server restarts and a user can reset it by clearing browser data. Before public launch, replace it with authenticated, persistent server-side entitlements. Never trust a plan name sent by a mobile client.
+
+## Android + Firebase
+
+The repository now includes a Jetpack Compose Android app registered to the Firebase package in `app/google-services.json`. Open the repository root in Android Studio, allow Gradle to sync, enable Anonymous Authentication in Firebase Console, and run against the local backend. The Android emulator uses `http://10.0.2.2:3000` in debug builds; set `TAX_API_BASE_URL` to an HTTPS production endpoint for release builds.
+
+Firebase Analytics, Anonymous Authentication, Firestore, and Play Integrity App Check dependencies are installed through Firebase BoM `34.19.0`. The client sends both its Firebase ID token and App Check token to the backend. **The current Node backend does not yet verify those tokens**, so this is not an authentication boundary until Firebase Admin token verification and persistent Firestore entitlements are added. Enable App Check enforcement only after that server work and after registering the Play signing certificate.
+
+The Firebase configuration file identifies the app but is not a server credential. Never put the OpenAI key, a Firebase Admin service-account key, or Play Developer API credentials in the Android module or GitHub.
+
 ## Before a public launch
 
 This is a runnable development MVP, not a released Android app. Live provider integration needs a configured key and end-to-end validation. Validate interview accuracy with reviewed cases for dependencies, self-employment, filing status and credits, including historical years and contradictory facts. Add authentication, per-user rate/budget limits and secure HTTPS hosting before exposing the paid endpoint publicly; the current global concurrency cap is not a per-user abuse control. Keep the default loopback binding during development.
 
-Future Android packaging can reuse this API and chat flow in a native client. Play Store packaging, signing, privacy disclosures and release checks are not included. No payments, tax filing, document uploads or state tax advice in this initial scope.
+Future Android packaging can reuse this API and chat flow in a native client. The next integration milestone is Firebase Authentication + App Check, followed by server-verified Google Play Billing. Play Store packaging, signing, privacy disclosures and release checks are not included. No payments, tax filing, document uploads or state tax advice in this initial scope.
 
 The existing repository license is preserved.
 
